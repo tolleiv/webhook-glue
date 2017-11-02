@@ -21,7 +21,7 @@ SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 .PHONY: all build clean depend install uninstall fmt simplify check test run
 
-all: check test install
+all: depend check test install
 
 $(TARGET): $(SRC)
 	@go build $(LDFLAGS) -o $(TARGET)
