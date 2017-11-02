@@ -1,18 +1,19 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/ghodss/yaml"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/tolleiv/webhook-glue/lib"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"io/ioutil"
-	"github.com/ghodss/yaml"
-	"encoding/json"
 	"os"
-	"github.com/gorilla/handlers"
-	"github.com/tolleiv/webhook-glue/lib"
-	"fmt"
 )
 
+// App wraps the HTTP-Application parts and the endpoints for webhooks input
 type App struct {
 	Router     *mux.Router
 	Filter     []lib.Filter
@@ -20,6 +21,7 @@ type App struct {
 	Channel    chan<- lib.Action
 }
 
+// Initialize all external dependencies for App
 func (a *App) Initialize(configFile string, ch chan<- lib.Action) {
 	a.Channel = ch
 	a.Router = mux.NewRouter()
@@ -31,6 +33,7 @@ func (a *App) Initialize(configFile string, ch chan<- lib.Action) {
 	}
 }
 
+// Run starts the HTTP server
 func (a *App) Run(addr string) {
 	loggedRouter := handlers.LoggingHandler(os.Stdout, a.Router)
 	log.Fatal(http.ListenAndServe(addr, loggedRouter))

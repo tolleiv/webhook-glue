@@ -2,11 +2,12 @@ package lib
 
 import (
 	"encoding/json"
-	"strings"
-	"github.com/tolleiv/jsonpath"
 	"fmt"
+	"github.com/tolleiv/jsonpath"
+	"strings"
 )
 
+// Filter is providing the glue between incoming data and triggered actions
 type Filter struct {
 	Name      string         `json:"name"`
 	Condition string         `json:"condition"`
@@ -14,21 +15,24 @@ type Filter struct {
 	Values    []FilterValues `json:"values"`
 }
 
+// FilterValues represent the data read from the webhook payload
 type FilterValues struct {
 	Name     string `json:"name"`
-	JsonPath string `json:"jsonPath"`
+	JSONPath string `json:"jsonPath"`
 }
 
+// Extract reads the webhook payload and exports relevant data
 func (v *FilterValues) Extract(in string) string {
-	var json_data interface{}
-	json.Unmarshal([]byte(in), &json_data)
-	res, err := jsonpath.JsonPathLookup(json_data, v.JsonPath)
+	var jsonData interface{}
+	json.Unmarshal([]byte(in), &jsonData)
+	res, err := jsonpath.JsonPathLookup(jsonData, v.JSONPath)
 	if err != nil {
 		return ""
 	}
 	return fmt.Sprintf("%v", res)
 }
 
+// Match checks if the webhook payload matches the given condition
 func (f *Filter) Match(in string) bool {
 	r := leftCompareDeeper([]byte(f.Condition), []byte(in))
 	return r

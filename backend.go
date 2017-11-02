@@ -2,21 +2,23 @@ package main
 
 import (
 	"fmt"
-	"github.com/tolleiv/webhook-glue/lib"
 	"github.com/ghodss/yaml"
+	"github.com/tolleiv/webhook-glue/lib"
 	//	"os/exec"
-	"strings"
+	"github.com/mgutz/logxi/v1"
 	"io/ioutil"
 	"os/exec"
-	"github.com/mgutz/logxi/v1"
+	"strings"
 )
 
+// Backend wraps the execution parts for the scripts triggered by the App
 type Backend struct {
 	ConfigFile string
 	Actions    []lib.Action
 	Channel    <-chan lib.Action
 }
 
+// Initialize all external dependencies for Backend
 func (b *Backend) Initialize(configFile string, ch <-chan lib.Action) {
 	b.Channel = ch
 	b.ConfigFile = configFile
@@ -40,6 +42,8 @@ func (b *Backend) initializeActions() error {
 	b.Actions = a.Actions
 	return nil
 }
+
+// Run starts the loop which actually triggers the actions
 func (b *Backend) Run() {
 	for a := range b.Channel {
 		fmt.Printf("Found backend action: %s\n", a.Name)

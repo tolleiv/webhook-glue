@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/tolleiv/webhook-glue/lib"
 	"net/http"
 	"net/http/httptest"
-	"testing"
 	"os"
-	"github.com/tolleiv/webhook-glue/lib"
+	"testing"
 )
 
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {
