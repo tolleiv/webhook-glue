@@ -1,0 +1,29 @@
+
+filters:
+  - name: 'foo-staging'
+    condition: '{"project":{"path_with_namespace": "gitlab-org/gitlab-test"},"builds":[{"stage": "deploy", "name": "staging", "status": "created"}]}'
+    actions:
+    - deploy
+    values:
+    - name: id
+      jsonPath: '$.object_attributes.id'
+  - name: 'foo-production'
+    condition: '{"project":{"path_with_namespace": "gitlab-org/gitlab-test"},"builds":[{"stage": "deploy", "name": "production", "status": "created"}]}'
+    actions:
+    - deploy
+  - name: 'foo-any'
+    condition: '{"project":{"path_with_namespace": "gitlab-org/gitlab-test"},"builds":[{"stage": "deploy"}]}'
+    actions:
+    - deploy
+    - echo
+    values:
+    - name: message
+      jsonPath: '$.commit.message'
+
+actions:
+  - name: deploy
+    script:
+    - ./scripts/deploy.sh >> deploy.out
+  - name: echo
+    script:
+    - ./scripts/echo.sh >> echo.out
