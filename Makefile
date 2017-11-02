@@ -56,6 +56,7 @@ check:
 
 test:
 	@go test -v $$(go list ./... | grep -v /vendor/);
+	@go test -bench .
 
 run: install
 	@$(TARGET)
