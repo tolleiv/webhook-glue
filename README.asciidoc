@@ -1,0 +1,8 @@
+
+image:https://travis-ci.org/tolleiv/webhook-glue.svg?branch=master[]
+
+webhook-gluebot
+------------------------
+
+Receives webhook requests, matches them and eventually triggers scripts if they meet our expectations.
+

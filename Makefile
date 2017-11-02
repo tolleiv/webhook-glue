@@ -11,10 +11,15 @@ BUILD := `git rev-parse HEAD`
 # Use linker flags to provide version/build settings to the target
 LDFLAGS=-ldflags "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD)"
 
+# packages we require
+DEPEND=github.com/Masterminds/glide \
+       github.com/golang/lint/golint
+
+
 # go source files, ignore vendor directory
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
-.PHONY: all build clean install uninstall fmt simplify check test run
+.PHONY: all build clean depend install uninstall fmt simplify check test run
 
 all: check test install
 
@@ -23,6 +28,10 @@ $(TARGET): $(SRC)
 
 build: $(TARGET)
 	@true
+
+depend:
+	go get -v $(DEPEND)
+	glide install
 
 clean:
 	@rm -f $(TARGET)
@@ -42,7 +51,6 @@ simplify:
 
 check:
 	@test -z $(shell gofmt -l main.go | tee /dev/stderr) || echo "[WARN] Fix formatting issues with 'make fmt'"
-	@which golint || go get github.com/golang/lint/golint
 	@for d in $$(go list ./... | grep -v /vendor/); do golint $${d}; done
 	@go tool vet ${SRC}
 
