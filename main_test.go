@@ -50,6 +50,24 @@ func TestEmptyFilters(t *testing.T) {
 	}
 }
 
+func TestReloadFilters(t *testing.T) {
+	a.Initialize("test/empty.yaml", ch)
+
+	a.ConfigFile = "test/onerule.yaml"
+
+	req, _ := http.NewRequest("POST", "/reload", nil)
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusSeeOther, response.Code)
+
+	req, _ = http.NewRequest("GET", "/", nil)
+	response = executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	if body := response.Body.String(); body == "null" {
+		t.Errorf("Expected an empty array. Got %s", body)
+	}
+}
+
 func TestMatchingFilters(t *testing.T) {
 	a.Initialize("test/onerule.yaml", ch)
 	body, _ := os.Open("test/req-staging.json")
