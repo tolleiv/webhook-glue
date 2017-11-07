@@ -40,10 +40,11 @@ func (a *App) Run(addr string) {
 }
 
 func (a *App) initializeRoutes() {
-	a.Router.HandleFunc("/", a.listFilters).Methods("GET")
+	a.Router.HandleFunc("/filters", a.listFilters).Methods("GET")
 	a.Router.HandleFunc("/webhook", a.triggerFilters).Methods("POST")
 	a.Router.HandleFunc("/reload", a.reloadFilters).Methods("POST")
 	a.Router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
+
 }
 
 func (a *App) initializeFilters() error {
@@ -75,8 +76,6 @@ func (a *App) triggerFilters(w http.ResponseWriter, r *http.Request) {
 		if !f.Match(string(body)) {
 			continue
 		}
-		//fmt.Printf("Matched %s\n", f.Name)
-
 		params := make([]lib.ActionParam, 0)
 		for _, v := range f.Values {
 			params = append(params, lib.ActionParam{Name: v.Name, Value: v.Extract(string(body))})
