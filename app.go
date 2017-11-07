@@ -43,6 +43,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/", a.listFilters).Methods("GET")
 	a.Router.HandleFunc("/webhook", a.triggerFilters).Methods("POST")
 	a.Router.HandleFunc("/reload", a.reloadFilters).Methods("POST")
+	a.Router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 }
 
 func (a *App) initializeFilters() error {
