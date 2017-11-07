@@ -41,6 +41,7 @@ func (a *App) Run(addr string) {
 
 func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/filters", a.listFilters).Methods("GET")
+	a.Router.HandleFunc("/version", a.showVersion).Methods("GET")
 	a.Router.HandleFunc("/webhook", a.triggerFilters).Methods("POST")
 	a.Router.HandleFunc("/reload", a.reloadFilters).Methods("POST")
 	a.Router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
@@ -61,6 +62,11 @@ func (a *App) initializeFilters() error {
 	}
 	a.Filter = f.Filters
 	return nil
+}
+
+
+func (a *App) showVersion(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Version: %s\nBuild: %s", version, build)
 }
 
 func (a *App) listFilters(w http.ResponseWriter, r *http.Request) {

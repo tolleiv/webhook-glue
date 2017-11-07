@@ -40,7 +40,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestEmptyFilters(t *testing.T) {
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequest("GET", "/filters", nil)
 	response := executeRequest(req)
 
 	checkResponseCode(t, http.StatusOK, response.Code)
@@ -59,7 +59,7 @@ func TestReloadFilters(t *testing.T) {
 	response := executeRequest(req)
 	checkResponseCode(t, http.StatusSeeOther, response.Code)
 
-	req, _ = http.NewRequest("GET", "/", nil)
+	req, _ = http.NewRequest("GET", "/filters", nil)
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusOK, response.Code)
 
