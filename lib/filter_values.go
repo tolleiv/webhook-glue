@@ -22,4 +22,3 @@ func (v *FilterValues) Extract(in string) string {
 	}
 	return fmt.Sprintf("%v", res)
 }
-

@@ -13,14 +13,16 @@ import (
 
 // Backend wraps the execution parts for the scripts triggered by the App
 type Backend struct {
-	ConfigFile string
-	Actions    []lib.Action
-	Channel    <-chan lib.Action
+	ConfigFile  string
+	Actions     []lib.Action
+	Channel     <-chan lib.Action
+	EventStream chan<- []byte
 }
 
 // Initialize all external dependencies for Backend
-func (b *Backend) Initialize(configFile string, ch <-chan lib.Action) {
+func (b *Backend) Initialize(configFile string, ch <-chan lib.Action, e chan<- []byte) {
 	b.Channel = ch
+	b.EventStream = e
 	b.ConfigFile = configFile
 	err := b.initializeActions()
 	if err != nil {
@@ -60,6 +62,8 @@ func (b *Backend) Run() {
 		}
 
 		execCommand := strings.Join(cmd, " ; ")
+
+		b.EventStream <- []byte(execCommand)
 
 		fmt.Printf("Command: %s\n", execCommand)
 		result := exec.Command("sh", "-c", execCommand)

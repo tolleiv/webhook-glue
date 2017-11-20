@@ -15,15 +15,17 @@ import (
 
 // App wraps the HTTP-Application parts and the endpoints for webhooks input
 type App struct {
-	Router     *mux.Router
-	Filter     []lib.Filter
-	ConfigFile string
-	Channel    chan<- lib.Action
+	Router      *mux.Router
+	Filter      []lib.Filter
+	ConfigFile  string
+	Channel     chan<- lib.Action
+	EventStream chan<- []byte
 }
 
 // Initialize all external dependencies for App
-func (a *App) Initialize(configFile string, ch chan<- lib.Action) {
+func (a *App) Initialize(configFile string, ch chan<- lib.Action, e chan<- []byte) {
 	a.Channel = ch
+	a.EventStream = e
 	a.Router = mux.NewRouter()
 	a.ConfigFile = configFile
 	a.initializeRoutes()
@@ -64,7 +66,6 @@ func (a *App) initializeFilters() error {
 	return nil
 }
 
-
 func (a *App) showVersion(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Version: %s\nBuild: %s", version, build)
 }
@@ -78,6 +79,7 @@ func (a *App) listFilters(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) triggerFilters(w http.ResponseWriter, r *http.Request) {
 	body, _ := ioutil.ReadAll(r.Body)
+	a.EventStream <- body
 	for _, f := range a.Filter {
 		if !f.Match(string(body)) {
 			continue

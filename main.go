@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/tolleiv/webhook-glue/lib"
 	"os"
 	"os/signal"
 	"syscall"
-	"fmt"
 )
 
 var (
@@ -37,12 +37,16 @@ func main() {
 
 	ch := make(chan lib.Action, 10)
 
+	e := EventBroker{}
+	e.Initialize()
+	go e.Run(":8081")
+
 	b := Backend{}
-	b.Initialize(*configFile, ch)
+	b.Initialize(*configFile, ch, e.Notifier)
 	go b.Run()
 
 	a := App{}
-	a.Initialize(*configFile, ch)
+	a.Initialize(*configFile, ch, e.Notifier)
 	go a.Run(":8080")
 
 	<-done
