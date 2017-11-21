@@ -33,7 +33,7 @@ var ch chan lib.Action
 func TestMain(m *testing.M) {
 	ch = make(chan lib.Action, 10)
 	a = App{}
-	a.Initialize("test/empty.yaml", ch)
+	a.Initialize("test/empty.yaml", ch, nil)
 	code := m.Run()
 	close(ch)
 	os.Exit(code)
@@ -51,7 +51,7 @@ func TestEmptyFilters(t *testing.T) {
 }
 
 func TestReloadFilters(t *testing.T) {
-	a.Initialize("test/empty.yaml", ch)
+	a.Initialize("test/empty.yaml", ch, nil)
 
 	a.ConfigFile = "test/onerule.yaml"
 
@@ -69,7 +69,7 @@ func TestReloadFilters(t *testing.T) {
 }
 
 func TestMatchingFilters(t *testing.T) {
-	a.Initialize("test/onerule.yaml", ch)
+	a.Initialize("test/onerule.yaml", ch, nil)
 	body, _ := os.Open("test/req-staging.json")
 
 	clearChannel()
@@ -83,7 +83,7 @@ func TestMatchingFilters(t *testing.T) {
 }
 
 func TestMismatchedFilters(t *testing.T) {
-	a.Initialize("test/onerule.yaml", ch)
+	a.Initialize("test/onerule.yaml", ch, nil)
 	body, _ := os.Open("test/req-production.json")
 
 	clearChannel()
@@ -97,7 +97,7 @@ func TestMismatchedFilters(t *testing.T) {
 }
 
 func BenchmarkMatchingFilters(b *testing.B) {
-	a.Initialize("test/onerule.yaml", ch)
+	a.Initialize("test/onerule.yaml", ch, nil)
 	body, _ := os.Open("test/req-staging.json")
 
 	for i := 0; i < b.N; i++ {
@@ -108,7 +108,7 @@ func BenchmarkMatchingFilters(b *testing.B) {
 }
 
 func BenchmarkMismatchedFilters(b *testing.B) {
-	a.Initialize("test/onerule.yaml", ch)
+	a.Initialize("test/onerule.yaml", ch, nil)
 	body, _ := os.Open("test/req-production.json")
 
 	for i := 0; i < b.N; i++ {

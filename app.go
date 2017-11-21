@@ -79,7 +79,10 @@ func (a *App) listFilters(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) triggerFilters(w http.ResponseWriter, r *http.Request) {
 	body, _ := ioutil.ReadAll(r.Body)
-	a.EventStream <- body
+
+	if a.EventStream != nil {
+		a.EventStream <- body
+	}
 	for _, f := range a.Filter {
 		if !f.Match(string(body)) {
 			continue
